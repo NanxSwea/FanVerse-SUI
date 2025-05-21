@@ -18,7 +18,7 @@ interface NFT {
 const mockNFTs: NFT[] = [
   {
     id: '1',
-    name: 'Captain's Trophy',
+    name: 'Captain\'s Trophy',
     image: 'https://images.pexels.com/photos/3657154/pexels-photo-3657154.jpeg?auto=compress&cs=tinysrgb&w=600',
     rarity: 'Legendary',
     fandom: 'Dhoni',
