@@ -48,7 +48,7 @@ const mockNFTs: NFT[] = [
     image: 'https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=600',
     rarity: 'Rare',
     fandom: 'Messi',
-    description: 'Messi's record-breaking goal scoring achievement',
+    description: "Messi's record-breaking goal scoring achievement",
     attributes: [
       { name: 'Season', value: '2022/23' },
       { name: 'Goals', value: '35' },
