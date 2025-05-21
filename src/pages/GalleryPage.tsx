@@ -22,7 +22,7 @@ const mockNFTs: NFT[] = [
     image: 'https://images.pexels.com/photos/3657154/pexels-photo-3657154.jpeg?auto=compress&cs=tinysrgb&w=600',
     rarity: 'Legendary',
     fandom: 'Dhoni',
-    description: 'Commemorative NFT celebrating MS Dhoni's World Cup victory',
+    description: "Commemorative NFT celebrating MS Dhoni's World Cup victory",
     attributes: [
       { name: 'Year', value: '2011' },
       { name: 'Tournament', value: 'World Cup' },
