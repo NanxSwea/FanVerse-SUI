@@ -41,7 +41,8 @@ const fandoms = [
     emoji: '🍥',
     color: 'from-orange-500/20 to-orange-600/20',
     description: 'Ninja Way',
-    image: 'https://images.pexels.com/photos/12975820/pexels-photo-12975820.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+    image: 'https://images.pexels.com/photos/12975820/pexels-photo-12975820.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+    unlockRequirement: 'Complete 3 quizzes'
   }
 ];
 
@@ -82,7 +83,7 @@ export const FandomPage: React.FC = () => {
               onClick={() => selectFandom(fandom.id)}
               className="w-full group"
             >
-              <div className={`glass-card nft-glow rounded-2xl overflow-hidden transition-all duration-500 transform group-hover:scale-[1.02]`}>
+              <div className={`glass-card nft-glow rounded-2xl overflow-hidden transition-all duration-500 transform group-hover:scale-[1.02] relative`}>
                 <div className="relative h-48 overflow-hidden">
                   <div className={`absolute inset-0 bg-gradient-to-br ${fandom.color} mix-blend-overlay`} />
                   <img 

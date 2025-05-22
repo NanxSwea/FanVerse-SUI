@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Image, Award, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Image, Award, Star, Lock, Gift } from 'lucide-react';
 
 interface NFT {
   id: string;
@@ -9,6 +9,7 @@ interface NFT {
   rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary';
   fandom: string;
   description: string;
+  locked: boolean;
   attributes: {
     name: string;
     value: string;
@@ -18,11 +19,12 @@ interface NFT {
 const mockNFTs: NFT[] = [
   {
     id: '1',
-    name: 'Captain\'s Trophy',
+    name: "Captain's Trophy",
     image: 'https://images.pexels.com/photos/3657154/pexels-photo-3657154.jpeg?auto=compress&cs=tinysrgb&w=600',
     rarity: 'Legendary',
     fandom: 'Dhoni',
     description: "Commemorative NFT celebrating MS Dhoni's World Cup victory",
+    locked: false,
     attributes: [
       { name: 'Year', value: '2011' },
       { name: 'Tournament', value: 'World Cup' },
@@ -36,6 +38,7 @@ const mockNFTs: NFT[] = [
     rarity: 'Epic',
     fandom: 'BTS',
     description: 'Special edition BTS Dynamite performance NFT',
+    locked: false,
     attributes: [
       { name: 'Era', value: 'Dynamite' },
       { name: 'Type', value: 'Performance' },
@@ -49,10 +52,39 @@ const mockNFTs: NFT[] = [
     rarity: 'Rare',
     fandom: 'Messi',
     description: "Messi's record-breaking goal scoring achievement",
+    locked: true,
     attributes: [
       { name: 'Season', value: '2022/23' },
       { name: 'Goals', value: '35' },
       { name: 'Edition', value: '1 of 1000' }
+    ]
+  },
+  {
+    id: '4',
+    name: 'Fearless Era',
+    image: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=600',
+    rarity: 'Legendary',
+    fandom: 'Taylor',
+    description: 'Rare collectible from the Fearless era',
+    locked: true,
+    attributes: [
+      { name: 'Album', value: 'Fearless' },
+      { name: 'Year', value: '2008' },
+      { name: 'Edition', value: '1 of 50' }
+    ]
+  },
+  {
+    id: '5',
+    name: 'Sage Mode',
+    image: 'https://images.pexels.com/photos/12975820/pexels-photo-12975820.jpeg?auto=compress&cs=tinysrgb&w=600',
+    rarity: 'Epic',
+    fandom: 'Naruto',
+    description: 'Naruto mastering the legendary Sage Mode',
+    locked: true,
+    attributes: [
+      { name: 'Arc', value: 'Pain' },
+      { name: 'Power', value: 'Sage' },
+      { name: 'Edition', value: '1 of 200' }
     ]
   }
 ];
@@ -66,6 +98,16 @@ const rarityColors = {
 
 export const GalleryPage: React.FC = () => {
   const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
+  const [revealingNFT, setRevealingNFT] = useState<string | null>(null);
+  const [unlockedNFTs, setUnlockedNFTs] = useState<string[]>([]);
+
+  const handleReveal = (nftId: string) => {
+    setRevealingNFT(nftId);
+    setTimeout(() => {
+      setUnlockedNFTs(prev => [...prev, nftId]);
+      setRevealingNFT(null);
+    }, 2000);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -87,48 +129,91 @@ export const GalleryPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockNFTs.map((nft) => (
-            <motion.div
-              key={nft.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.02 }}
-              className="glass-card rounded-2xl overflow-hidden cursor-pointer"
-              onClick={() => setSelectedNFT(nft)}
-            >
-              <div className="relative h-64">
-                <img
-                  src={nft.image}
-                  alt={nft.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 right-4">
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${rarityColors[nft.rarity]} text-white`}>
-                    {nft.rarity}
+          {mockNFTs.map((nft) => {
+            const isLocked = nft.locked && !unlockedNFTs.includes(nft.id);
+            const isRevealing = revealingNFT === nft.id;
+
+            return (
+              <motion.div
+                key={nft.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.02 }}
+                className={`glass-card rounded-2xl overflow-hidden cursor-pointer relative ${
+                  isLocked ? 'filter grayscale' : ''
+                }`}
+                onClick={() => !isLocked && setSelectedNFT(nft)}
+              >
+                <AnimatePresence>
+                  {isLocked && !isRevealing && (
+                    <motion.div
+                      initial={false}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-10"
+                    >
+                      <Lock className="h-8 w-8 text-slate-400 mb-3" />
+                      <p className="text-slate-300 text-sm mb-4">Complete quiz to unlock</p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReveal(nft.id);
+                        }}
+                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center"
+                      >
+                        <Gift className="h-4 w-4 mr-2" />
+                        Reveal NFT
+                      </button>
+                    </motion.div>
+                  )}
+
+                  {isRevealing && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center z-10"
+                    >
+                      <div className="text-white text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-4"></div>
+                        <p className="text-lg font-medium">Revealing your NFT...</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="relative h-64">
+                  <img
+                    src={nft.image}
+                    alt={nft.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 right-4">
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${rarityColors[nft.rarity]} text-white`}>
+                      {nft.rarity}
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-2">{nft.name}</h3>
-                <p className="text-sm text-slate-400 mb-4">{nft.description}</p>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-700">
-                  <div className="flex items-center space-x-2">
-                    <Award className="h-5 w-5 text-indigo-400" />
-                    <span className="text-sm text-slate-300">{nft.fandom} Collection</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-yellow-400">{nft.attributes[2].value}</span>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2">{nft.name}</h3>
+                  <p className="text-sm text-slate-400 mb-4">{nft.description}</p>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-700">
+                    <div className="flex items-center space-x-2">
+                      <Award className="h-5 w-5 text-indigo-400" />
+                      <span className="text-sm text-slate-300">{nft.fandom} Collection</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4 text-yellow-400" />
+                      <span className="text-sm text-yellow-400">{nft.attributes[2].value}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* NFT Detail Modal */}
         {selectedNFT && (
           <motion.div
             initial={{ opacity: 0 }}
