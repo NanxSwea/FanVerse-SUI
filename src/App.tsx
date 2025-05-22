@@ -17,7 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/fandom" element={<FandomPage />} />
-            <Route path="/quiz" element={<QuizPage />} />
+            <Route path="/quiz/:fandomId" element={<QuizPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
           </Routes>

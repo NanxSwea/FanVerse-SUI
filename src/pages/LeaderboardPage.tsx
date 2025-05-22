@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Star } from 'lucide-react';
+import { useWallet } from '@suiet/wallet-kit';
 
 interface LeaderboardEntry {
   id: string;
@@ -10,73 +11,67 @@ interface LeaderboardEntry {
   avatar: string;
   badges: number;
   fandom: string;
+  walletAddress: string;
 }
 
-// Simulated leaderboard data - replace with real data from your backend
-const mockLeaderboard: LeaderboardEntry[] = [
-  {
-    id: '1',
-    rank: 1,
-    username: 'CricketMaster',
-    score: 2500,
-    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100',
-    badges: 5,
-    fandom: 'Dhoni'
-  },
-  {
-    id: '2',
-    rank: 2,
-    username: 'BTSArmy2023',
-    score: 2350,
-    avatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=100',
-    badges: 4,
-    fandom: 'BTS'
-  },
-  {
-    id: '3',
-    rank: 3,
-    username: 'MessiGoat',
-    score: 2200,
-    avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=100',
-    badges: 4,
-    fandom: 'Messi'
-  },
-  {
-    id: '4',
-    rank: 4,
-    username: 'SwiftieForever',
-    score: 2100,
-    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100',
-    badges: 3,
-    fandom: 'Taylor'
-  },
-  {
-    id: '5',
-    rank: 5,
-    username: 'NarutoUzumaki',
-    score: 2000,
-    avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=100',
-    badges: 3,
-    fandom: 'Naruto'
-  }
-];
-
 export const LeaderboardPage: React.FC = () => {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(mockLeaderboard);
+  const { address } = useWallet();
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [timeLeft, setTimeLeft] = useState(60);
 
+  // Simulated function to get username from wallet address
+  const getUsernameFromAddress = (addr: string) => {
+    const names = ['CryptoFan', 'BlockchainGuru', 'NFTCollector', 'WebThree', 'CoinMaster'];
+    return names[Math.floor(Math.random() * names.length)] + '_' + addr.substring(0, 4);
+  };
+
+  // Initialize leaderboard with connected wallet
   useEffect(() => {
-    // Simulate real-time updates
+    if (address) {
+      const userEntry = {
+        id: address,
+        rank: 1,
+        username: getUsernameFromAddress(address),
+        score: Math.floor(Math.random() * 1000) + 1000, // Random initial score
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${address}`,
+        badges: Math.floor(Math.random() * 5) + 1,
+        fandom: 'Connected User',
+        walletAddress: address
+      };
+
+      // Generate other entries
+      const otherEntries = Array.from({ length: 9 }, (_, i) => ({
+        id: `wallet-${i}`,
+        rank: i + 2,
+        username: `Player${i + 1}`,
+        score: Math.floor(Math.random() * 1000) + 500,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
+        badges: Math.floor(Math.random() * 5) + 1,
+        fandom: ['Dhoni', 'BTS', 'Messi', 'Taylor', 'Naruto'][Math.floor(Math.random() * 5)],
+        walletAddress: `0x${Math.random().toString(16).substring(2, 10)}`
+      }));
+
+      const allEntries = [userEntry, ...otherEntries]
+        .sort((a, b) => b.score - a.score)
+        .map((entry, index) => ({ ...entry, rank: index + 1 }));
+
+      setLeaderboard(allEntries);
+    }
+  }, [address]);
+
+  // Simulate real-time updates
+  useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeft(prev => (prev > 0 ? prev - 1 : 60));
       
       if (timeLeft === 0) {
-        // Simulate leaderboard update
         setLeaderboard(prev => 
           prev.map(entry => ({
             ...entry,
             score: entry.score + Math.floor(Math.random() * 50)
-          })).sort((a, b) => b.score - a.score)
+          }))
+          .sort((a, b) => b.score - a.score)
+          .map((entry, index) => ({ ...entry, rank: index + 1 }))
         );
       }
     }, 1000);
@@ -109,7 +104,9 @@ export const LeaderboardPage: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className={`flex items-center p-4 rounded-xl mb-4 ${
-                  index === 0
+                  entry.walletAddress === address
+                    ? 'bg-indigo-500/20 border border-indigo-500/40'
+                    : index === 0
                     ? 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/20'
                     : index === 1
                     ? 'bg-gradient-to-r from-slate-400/20 to-slate-500/20 border border-slate-400/20'
@@ -139,7 +136,14 @@ export const LeaderboardPage: React.FC = () => {
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white">{entry.username}</h3>
+                  <div className="flex items-center">
+                    <h3 className="text-lg font-semibold text-white">{entry.username}</h3>
+                    {entry.walletAddress === address && (
+                      <span className="ml-2 text-xs bg-indigo-500/30 text-indigo-300 px-2 py-0.5 rounded-full">
+                        You
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center text-sm">
                     <span className="text-slate-400 mr-2">{entry.fandom} Fan</span>
                     <div className="flex items-center">
@@ -162,4 +166,4 @@ export const LeaderboardPage: React.FC = () => {
       </motion.div>
     </div>
   );
-};
+}
