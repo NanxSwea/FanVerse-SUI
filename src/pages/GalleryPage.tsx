@@ -86,6 +86,34 @@ const mockNFTs: NFT[] = [
       { name: 'Power', value: 'Sage' },
       { name: 'Edition', value: '1 of 200' }
     ]
+  },
+  {
+    id: '6',
+    name: 'Rasengan Master',
+    image: 'https://images.pexels.com/photos/6633920/pexels-photo-6633920.jpeg?auto=compress&cs=tinysrgb&w=600',
+    rarity: 'Legendary',
+    fandom: 'Naruto',
+    description: 'Naruto perfecting his signature Rasengan technique',
+    locked: true,
+    attributes: [
+      { name: 'Jutsu', value: 'Rasengan' },
+      { name: 'Type', value: 'Ninjutsu' },
+      { name: 'Edition', value: '1 of 50' }
+    ]
+  },
+  {
+    id: '7',
+    name: 'Nine-Tails Power',
+    image: 'https://images.pexels.com/photos/6633920/pexels-photo-6633920.jpeg?auto=compress&cs=tinysrgb&w=600',
+    rarity: 'Epic',
+    fandom: 'Naruto',
+    description: 'The legendary Nine-Tails chakra mode',
+    locked: true,
+    attributes: [
+      { name: 'Power', value: 'Kyuubi' },
+      { name: 'Mode', value: 'Chakra' },
+      { name: 'Edition', value: '1 of 100' }
+    ]
   }
 ];
 
