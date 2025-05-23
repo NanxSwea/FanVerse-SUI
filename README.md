@@ -38,6 +38,9 @@ We created FanVerse to:
 
 FanVerse is powered by the **SUI blockchain**, enriched with smart hooks and Web3 integrations.
 
+![image](https://github.com/user-attachments/assets/071a06b3-2224-4756-823e-e956a1361328)
+
+
 ### 🧩 Modules in Action:
 
 - 🧠 **Quiz Module** — Handles questions, scoring, and live feedback  
