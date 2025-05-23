@@ -4,10 +4,25 @@ import { Wallet, Network, Trophy, Image, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { truncateAddress } from '../utils/address';
 import { usePythPrice } from '../hooks/usePythPrice';
+import { useAchievements } from '../hooks/useAchievements';
 
 export const Header: React.FC = () => {
   const { address, connected, connecting, chain } = useWallet();
   const suiPrice = usePythPrice('Crypto.SUI/USD');
+  const { unlockAchievement } = useAchievements();
+  const [priceChecks, setPriceChecks] = useState(0);
+
+  useEffect(() => {
+    if (suiPrice) {
+      setPriceChecks(prev => {
+        const newCount = prev + 1;
+        if (newCount >= 5) {
+          unlockAchievement('pyth_oracle');
+        }
+        return newCount;
+      });
+    }
+  }, [suiPrice, unlockAchievement]);
 
   return (
     <header className="w-full bg-slate-800/50 backdrop-blur-md border-b border-slate-700 sticky top-0 z-10">

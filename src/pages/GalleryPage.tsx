@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image, Award, Star, Lock, Gift } from 'lucide-react';
+import { useAchievements } from '../hooks/useAchievements';
+import { AchievementPopup } from '../components/AchievementPopup';
 
 interface NFT {
   id: string;
@@ -128,17 +130,31 @@ export const GalleryPage: React.FC = () => {
   const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
   const [revealingNFT, setRevealingNFT] = useState<string | null>(null);
   const [unlockedNFTs, setUnlockedNFTs] = useState<string[]>([]);
+  const { unlockAchievement, latestAchievement, clearLatestAchievement } = useAchievements();
 
   const handleReveal = (nftId: string) => {
     setRevealingNFT(nftId);
     setTimeout(() => {
       setUnlockedNFTs(prev => [...prev, nftId]);
       setRevealingNFT(null);
+      
+      // Check for achievements
+      if (unlockedNFTs.length + 1 >= 3) {
+        unlockAchievement('navi_collector');
+      }
+      if (unlockedNFTs.length + 1 >= 5) {
+        unlockAchievement('hexadrop_expert');
+      }
     }, 2000);
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <AchievementPopup 
+        achievement={latestAchievement}
+        onClose={clearLatestAchievement}
+      />
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
