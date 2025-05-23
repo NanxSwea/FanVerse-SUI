@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Trophy, Droplet, Shell, Dog } from 'lucide-react';
+import { Award, Trophy, Droplet, Bell as Shell, Dog } from 'lucide-react';
 
 interface Achievement {
   id: string;
