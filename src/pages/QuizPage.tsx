@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Timer, Award } from 'lucide-react';
+import { useAchievements } from '../hooks/useAchievements';
+import { AchievementPopup } from '../components/AchievementPopup';
 
 const quizData = {
   dhoni: {
@@ -109,6 +111,7 @@ export const QuizPage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [isAnswered, setIsAnswered] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const { unlockAchievement, latestAchievement, clearLatestAchievement } = useAchievements();
 
   const quiz = fandomId && quizData[fandomId as keyof typeof quizData];
   const currentQuizQuestion = quiz?.questions[currentQuestion];
@@ -161,7 +164,13 @@ export const QuizPage: React.FC = () => {
   };
 
   const finishQuiz = () => {
-    // TODO: Mint NFT based on score
+    // Check for achievements
+    if (score === quiz?.questions.length) {
+      unlockAchievement('clamshell_master');
+    }
+    if (fandomId === 'naruto') {
+      unlockAchievement('dogcoin_friend');
+    }
     navigate('/gallery');
   };
 
@@ -169,6 +178,11 @@ export const QuizPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <AchievementPopup 
+        achievement={latestAchievement}
+        onClose={clearLatestAchievement}
+      />
+      
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
